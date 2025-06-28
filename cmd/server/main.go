@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// Initialize logger
-	log, err := logger.NewZapLogger("grpc-server")
+	log, err := logger.NewZapLogger("grpc-server", cfg.App.LogToFile)
 	if err != nil {
 		panic("failed to create logger: " + err.Error())
 	}

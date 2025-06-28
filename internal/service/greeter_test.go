@@ -23,11 +23,11 @@ type mockGreeterServerStream struct {
 
 // Implement grpc.ServerStream
 func (m *mockGreeterServerStream) SetHeader(md metadata.MD) error  { return nil }
-func (m *mockGreeterServerStream) SendHeader(md metadata.MD) error  { return nil }
-func (m *mockGreeterServerStream) SetTrailer(md metadata.MD)         {}
-func (m *mockGreeterServerStream) Context() context.Context          { return m.ctx }
-func (m *mockGreeterServerStream) SendMsg(msg interface{}) error     { return nil }
-func (m *mockGreeterServerStream) RecvMsg(msg interface{}) error     { return nil }
+func (m *mockGreeterServerStream) SendHeader(md metadata.MD) error { return nil }
+func (m *mockGreeterServerStream) SetTrailer(md metadata.MD)       {}
+func (m *mockGreeterServerStream) Context() context.Context        { return m.ctx }
+func (m *mockGreeterServerStream) SendMsg(msg interface{}) error   { return nil }
+func (m *mockGreeterServerStream) RecvMsg(msg interface{}) error   { return nil }
 
 // Implement methods for specific stream types
 func (m *mockGreeterServerStream) Send(res *pb.HelloReply) error {
@@ -50,7 +50,7 @@ func (m *mockGreeterServerStream) SendAndClose(res *pb.HelloReply) error {
 }
 
 func TestGreeterService_SayHello(t *testing.T) {
-	logger, _ := logger.NewZapLogger("test")
+	logger, _ := logger.NewZapLogger("test", false)
 	s := NewGreeterService(logger)
 
 	req := &pb.HelloRequest{Name: "World"}
@@ -62,7 +62,7 @@ func TestGreeterService_SayHello(t *testing.T) {
 }
 
 func TestGreeterService_StreamGreetings(t *testing.T) {
-	logger, _ := logger.NewZapLogger("test")
+	logger, _ := logger.NewZapLogger("test", false)
 	s := NewGreeterService(logger)
 
 	req := &pb.HelloRequest{Name: "Streamer"}
@@ -79,7 +79,7 @@ func TestGreeterService_StreamGreetings(t *testing.T) {
 }
 
 func TestGreeterService_GreetManyTimes(t *testing.T) {
-	logger, _ := logger.NewZapLogger("test")
+	logger, _ := logger.NewZapLogger("test", false)
 	s := NewGreeterService(logger)
 
 	requests := []*pb.HelloRequest{
@@ -97,7 +97,7 @@ func TestGreeterService_GreetManyTimes(t *testing.T) {
 }
 
 func TestGreeterService_Chat(t *testing.T) {
-	logger, _ := logger.NewZapLogger("test")
+	logger, _ := logger.NewZapLogger("test", false)
 	s := NewGreeterService(logger)
 
 	requests := []*pb.HelloRequest{

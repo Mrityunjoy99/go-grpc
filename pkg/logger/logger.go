@@ -28,7 +28,9 @@ type zapLogger struct {
 }
 
 var (
-	once sync.Once
+	once    sync.Once
+	log     Logger
+	initErr error
 )
 
 // NewZapLogger creates a new zap logger instance.
@@ -54,20 +56,8 @@ func ensureLogsDir() (string, error) {
 	return filepath.Join(logsDir, logFileName), nil
 }
 
-func NewZapLogger(serviceName string) (Logger, error) {
-	var (
-		zl      *zap.Logger
-		initErr error
-	)
-
+func NewZapLogger(serviceName string, logInFile bool) (Logger, error) {
 	once.Do(func() {
-		// Get log file path and ensure logs directory exists first
-		logFilePath, err := ensureLogsDir()
-		if err != nil {
-			initErr = fmt.Errorf("failed to setup logs directory: %w", err)
-			return
-		}
-
 		config := zap.NewProductionConfig()
 
 		// Customize the encoder config
@@ -89,8 +79,19 @@ func NewZapLogger(serviceName string) (Logger, error) {
 		config.EncoderConfig = encoderConfig
 
 		// Configure output paths
-		config.OutputPaths = []string{"stdout", logFilePath}
-		config.ErrorOutputPaths = []string{"stderr", logFilePath}
+		config.OutputPaths = []string{"stdout"}
+		config.ErrorOutputPaths = []string{"stderr"}
+
+		if logInFile {
+			logFilePath, err := ensureLogsDir()
+			if err != nil {
+				initErr = fmt.Errorf("failed to setup logs directory: %w", err)
+				return
+			}
+
+			config.OutputPaths = append(config.OutputPaths, logFilePath)
+			config.ErrorOutputPaths = append(config.ErrorOutputPaths, logFilePath)
+		}
 
 		// Set the log level based on environment variable or use InfoLevel as default
 		switch os.Getenv("LOG_LEVEL") {
@@ -104,6 +105,7 @@ func NewZapLogger(serviceName string) (Logger, error) {
 			config.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
 		}
 
+		var zl *zap.Logger
 		zl, initErr = config.Build(zap.AddCallerSkip(1))
 		if initErr != nil {
 			initErr = fmt.Errorf("failed to build logger: %w", initErr)
@@ -113,17 +115,11 @@ func NewZapLogger(serviceName string) (Logger, error) {
 		// Add service name to all logs
 		zl = zl.With(zap.String("service", serviceName))
 		zap.ReplaceGlobals(zl)
+
+		log = &zapLogger{logger: zl}
 	})
 
-	if initErr != nil {
-		return nil, initErr
-	}
-
-	if zl == nil {
-		return nil, fmt.Errorf("failed to initialize logger")
-	}
-
-	return &zapLogger{logger: zl}, nil
+	return log, initErr
 }
 
 func (l *zapLogger) Debug(msg string, fields ...zap.Field) {
@@ -155,11 +151,9 @@ func (l *zapLogger) WithContext(ctx context.Context) Logger {
 		return l
 	}
 
-	if ctx.Value("request_id") == nil {
-		return l
+	if id, ok := ctx.Value("request_id").(string); ok {
+		return &zapLogger{logger: l.logger.With(zap.String("request_id", id))}
 	}
-
-	l.logger = l.logger.With(zap.String("request_id", ctx.Value("request_id").(string)))
 
 	return l
 }

@@ -33,6 +33,12 @@ test:
 	@echo "Running tests..."
 	@go test -v ./...
 
+# Run tests with coverage
+test-coverage:
+	@echo "Running tests with coverage..."
+	@go test -v -coverprofile=coverage.out ./...
+	@echo "To view the coverage report, run: go tool cover -html=coverage.out"
+
 # Run the linter
 lint:
 	@echo "Running linter..."
@@ -50,6 +56,7 @@ help:
 	@echo "  build   - Build the application"
 	@echo "  run     - Run the application"
 	@echo "  test    - Run tests"
+	@echo "  test-coverage - Run tests and generate coverage report"
 	@echo "  lint    - Run linter"
 	@echo "  clean   - Clean build artifacts"
-	@echo "  help    - Display this help message"
+	@echo "  help    - Display thitest-coverages help message"
