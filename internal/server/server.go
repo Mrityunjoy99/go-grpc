@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
-	"github.com/mrityunjoydey/go-grpc/internal/service"
+	"github.com/mrityunjoydey/go-grpc/internal/service/greeter"
 	"github.com/mrityunjoydey/go-grpc/pkg/logger"
 	pb "github.com/mrityunjoydey/go-grpc/rpc"
 )
@@ -91,7 +91,7 @@ func New(port string, logger logger.Logger) *Server {
 	)
 
 	// Register Greeter service
-	greeterService := service.NewGreeterService(logger)
+	greeterService := greeter.NewGreeterService(logger)
 	pb.RegisterGreeterServer(gs, greeterService)
 
 	// Register health check service
