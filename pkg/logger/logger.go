@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mrityunjoydey/go-grpc/internal/common/constant"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -151,7 +152,7 @@ func (l *zapLogger) WithContext(ctx context.Context) Logger {
 		return l
 	}
 
-	if id, ok := ctx.Value("request_id").(string); ok {
+	if id, ok := ctx.Value(constant.RequestIDKey).(string); ok {
 		return &zapLogger{logger: l.logger.With(zap.String("request_id", id))}
 	}
 

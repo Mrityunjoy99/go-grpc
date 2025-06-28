@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestConfig defines the structure for testing configuration.
@@ -20,12 +21,27 @@ type TestServerConfig struct {
 
 func TestLoadConfig_Success(t *testing.T) {
 	// Set environment variables for the test
-	os.Setenv("SERVER_PORT", "9090")
-	os.Setenv("SERVER_HOST", "testhost")
+	err := os.Setenv("SERVER_PORT", "9090")
+	if err != nil {
+		t.Fatalf("failed to set environment variable: %v", err)
+	}
+
+	err = os.Setenv("SERVER_HOST", "testhost")
+	if err != nil {
+		t.Fatalf("failed to set environment variable: %v", err)
+	}
 
 	// Clean up environment variables after the test
-	defer os.Unsetenv("SERVER_PORT")
-	defer os.Unsetenv("SERVER_HOST")
+	defer func() {
+		if err := os.Unsetenv("SERVER_PORT"); err != nil {
+			t.Logf("failed to unset environment variable: %v", err)
+		}
+	}()
+	defer func() {
+		if err := os.Unsetenv("SERVER_HOST"); err != nil {
+			t.Logf("failed to unset environment variable: %v", err)
+		}
+	}()
 
 	// Create a new instance of the test config
 	cfg := &TestConfig{}
@@ -58,17 +74,25 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 
 func TestLoadConfig_ValidationError(t *testing.T) {
 	// Set an invalid environment variable for the test
-	os.Setenv("SERVER_PORT", "invalid")
+	err := os.Setenv("SERVER_PORT", "invalid")
+	if err != nil {
+		t.Fatalf("failed to set environment variable: %v", err)
+	}
 
 	// Clean up environment variables after the test
-	defer os.Unsetenv("SERVER_PORT")
+	defer func() {
+		if err := os.Unsetenv("SERVER_PORT"); err != nil {
+			t.Logf("failed to unset environment variable: %v", err)
+		}
+	}()
 
 	// Create a new instance of the test config
 	cfg := &TestConfig{}
 
-	// Load the configuration
-	_, err := LoadConfig(cfg)
-
+	// Load the configuration and expect an error
+	_, err = LoadConfig(cfg)
+	
 	// Assert that there was a validation error
-	assert.Error(t, err)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Field validation for 'Port' failed on the 'numeric' tag")
 }

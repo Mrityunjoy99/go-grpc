@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
 )
@@ -58,14 +59,20 @@ func TestServer_StartStop(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	conn, err := grpc.DialContext(ctx, "",
+	// Use a custom resolver scheme for bufconn
+	resolver.SetDefaultScheme("passthrough")
+	conn, err := grpc.NewClient("passthrough:///bufnet",
 		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return bufListener.Dial()
 		}),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	require.NoError(t, err)
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			t.Logf("failed to close connection: %v", err)
+		}
+	}()
 
 	// Check the health of the Greeter service
 	healthClient := grpc_health_v1.NewHealthClient(conn)

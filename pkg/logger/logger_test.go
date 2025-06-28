@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mrityunjoydey/go-grpc/internal/common/constant"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -61,7 +62,7 @@ func TestLogger_With(t *testing.T) {
 func TestLogger_WithContext(t *testing.T) {
 	t.Run("with request_id", func(t *testing.T) {
 		logger, logs := setupTestLogger()
-		ctx := context.WithValue(context.Background(), "request_id", "12345")
+		ctx := context.WithValue(context.Background(), constant.RequestIDKey, "12345")
 		contextualLogger := logger.WithContext(ctx)
 		contextualLogger.Info("context message")
 
@@ -83,4 +84,3 @@ func TestLogger_WithContext(t *testing.T) {
 		assert.Empty(t, entry.Context)
 	})
 }
-
