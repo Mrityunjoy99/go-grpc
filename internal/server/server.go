@@ -84,6 +84,10 @@ func New(port string, logger logger.Logger) *Server {
 			logging.UnaryServerInterceptor(interceptorLogger(logger)),
 			recovery.UnaryServerInterceptor(recoveryOpts...),
 		),
+		grpc.ChainStreamInterceptor(
+			logging.StreamServerInterceptor(interceptorLogger(logger)),
+			recovery.StreamServerInterceptor(recoveryOpts...),
+		),
 	)
 
 	// Register Greeter service

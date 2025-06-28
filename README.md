@@ -14,6 +14,19 @@ This is a production-ready gRPC microservice boilerplate built with Go, featurin
 - **CI/CD:** GitHub Actions for automated linting and testing
 - **Tooling:** Makefile for common development tasks
 
+## Implemented RPCs
+
+The `Greeter` service now includes the following methods:
+
+-   **Unary RPC**: `SayHello(HelloRequest) returns (HelloReply)`
+    -   A simple request-response method.
+-   **Server Streaming RPC**: `StreamGreetings(HelloRequest) returns (stream HelloReply)`
+    -   The client sends a single request, and the server returns a stream of responses.
+-   **Client Streaming RPC**: `GreetManyTimes(stream HelloRequest) returns (HelloReply)`
+    -   The client sends a stream of requests, and the server returns a single response.
+-   **Bi-directional Streaming RPC**: `Chat(stream HelloRequest) returns (stream HelloReply)`
+    -   Both the client and server can send a stream of messages to each other.
+
 ## Configuration
 
 The application uses a flexible configuration system with the following features:
@@ -98,13 +111,13 @@ type ServerConfig struct {
 ├── go.mod                     # Go module definition
 ├── go.sum                     # Go module checksums
 ├── grpc-service.postman_collection.json # Postman collection for testing
-├── internal/                  # Internal application code
-│   ├── server/                # gRPC server setup
-│   └── service/               # gRPC service implementation
-├── pkg/                       # Shared packages
-│   ├── config/                # Configuration loader
-│   └── logger/                # Zap logger setup
-├── plan.md                    # Project execution plan
+├── internal                   # Internal application logic
+│   ├── common                 # Common utilities
+│   ├── server                 # gRPC server setup
+│   └── service                # Service implementations
+├── pkg                        # Shared packages
+├── proto                      # Protocol Buffers definitions
+└── rpc                        # Generated gRPC code
 ├── proto/greeter.proto        # Protocol Buffers service definition
 └── rpc/                       # Generated gRPC code
 ```
