@@ -10,5 +10,5 @@ type ServerConfig struct {
 }
 
 type AppConfig struct {
-	LogToFile bool `default:"false" validate:"required"`
+	LogToFile bool `default:"false"`
 }

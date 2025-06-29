@@ -34,9 +34,6 @@ COPY --from=builder /grpc-server .
 # Make the binary executable
 RUN chmod +x /app/grpc-server
 
-# Set environment variables with defaults
-ENV SERVER_PORT=50051
-
 # Expose the gRPC port (documentation only, actual port mapping is done at runtime)
 EXPOSE 50051
 

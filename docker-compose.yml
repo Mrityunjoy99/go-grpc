@@ -9,3 +9,4 @@ services:
       - "50051:50051"
     environment:
       - SERVER_PORT=50051
+      - APP_LOGTOFILE=false
