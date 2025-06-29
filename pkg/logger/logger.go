@@ -153,7 +153,7 @@ func (l *zapLogger) WithContext(ctx context.Context) Logger {
 	}
 
 	if id, ok := ctx.Value(constant.RequestIDKey).(string); ok {
-		return &zapLogger{logger: l.logger.With(zap.String("request_id", id))}
+		return &zapLogger{logger: l.logger.With(zap.String(string(constant.RequestIDKey), id))}
 	}
 
 	return l

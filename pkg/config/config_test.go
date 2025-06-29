@@ -91,7 +91,7 @@ func TestLoadConfig_ValidationError(t *testing.T) {
 
 	// Load the configuration and expect an error
 	_, err = LoadConfig(cfg)
-	
+
 	// Assert that there was a validation error
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "Field validation for 'Port' failed on the 'numeric' tag")
