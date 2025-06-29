@@ -1,9 +1,7 @@
 name: Go CI
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   lint:
