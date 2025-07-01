@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package greeter;
+
+option go_package = "github.com/mrityunjoydey/go-grpc/rpc";
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}

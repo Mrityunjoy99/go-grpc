@@ -4,6 +4,9 @@ package greeter;
 
 option go_package = "github.com/mrityunjoydey/go-grpc/rpc";
 
+import "proto/greeter/greeter_request.proto";
+import "proto/greeter/greeter_response.proto";
+
 // The greeter service definition.
 service Greeter {
   // Sends a greeting
@@ -15,14 +18,4 @@ service Greeter {
   rpc GreetManyTimes (stream HelloRequest) returns (HelloReply);
   // Bi-directional
   rpc Chat (stream HelloRequest) returns (stream HelloReply);
-}
-
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
 }
