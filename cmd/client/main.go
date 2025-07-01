@@ -28,7 +28,6 @@ func main() {
 	defer func() {
 		if err := conn.Close(); err != nil {
 			log.Printf("failed to close connection: %v", err)
-			return
 		}
 	}()
 
