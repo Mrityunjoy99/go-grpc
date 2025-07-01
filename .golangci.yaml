@@ -1,0 +1,24 @@
+version: 2
+linters:
+  enable:
+    - lll
+    - funlen
+    - gocritic
+    - gocyclo
+    - gosec
+    - revive
+    - nakedret
+    - nolintlint
+    - unconvert
+    - wsl
+    - unparam
+  exclusions:
+    rules:
+      - path: _test.go
+        linters:
+          - funlen
+          - gocyclo
+          - gocritic
+          - revive
+          - nakedret
+          - nolintlint

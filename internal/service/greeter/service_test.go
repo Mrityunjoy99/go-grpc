@@ -40,8 +40,10 @@ func (m *mockGreeterServerStream) Recv() (*pb.HelloRequest, error) {
 	if m.recvIndex >= len(m.requests) {
 		return nil, io.EOF
 	}
+
 	req := m.requests[m.recvIndex]
 	m.recvIndex++
+
 	return req, nil
 }
 
@@ -52,7 +54,7 @@ func (m *mockGreeterServerStream) SendAndClose(res *pb.HelloReply) error {
 
 func TestGreeterService_SayHello(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	req := &pb.HelloRequest{Name: "World"}
 	res, err := s.SayHello(context.Background(), req)
@@ -64,7 +66,7 @@ func TestGreeterService_SayHello(t *testing.T) {
 
 func TestGreeterService_StreamGreetings(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	req := &pb.HelloRequest{Name: "Streamer"}
 	stream := &mockGreeterServerStream{ctx: context.Background()}
@@ -73,6 +75,7 @@ func TestGreeterService_StreamGreetings(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, stream.sentReplies, 5)
+
 	for i, msg := range stream.sentReplies {
 		expected := fmt.Sprintf("Hello, Streamer! (Greeting #%d)", i+1)
 		assert.Equal(t, expected, msg.Message)
@@ -81,7 +84,7 @@ func TestGreeterService_StreamGreetings(t *testing.T) {
 
 func TestGreeterService_GreetManyTimes(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	requests := []*pb.HelloRequest{
 		{Name: "Alice"},
@@ -99,7 +102,7 @@ func TestGreeterService_GreetManyTimes(t *testing.T) {
 
 func TestGreeterService_Chat(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	requests := []*pb.HelloRequest{
 		{Name: "Dave"},
@@ -112,6 +115,7 @@ func TestGreeterService_Chat(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, stream.sentReplies, len(requests))
+
 	for i, reply := range stream.sentReplies {
 		expected := "Hello, " + requests[i].GetName()
 		assert.Equal(t, expected, reply.Message)

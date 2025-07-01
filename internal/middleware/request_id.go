@@ -1,3 +1,4 @@
+// Package middleware provides middleware functions for gRPC servers.
 package middleware
 
 import (
@@ -15,10 +16,16 @@ import (
 // It extracts the request ID from the 'x-request-id' metadata header if present, otherwise generates a new one.
 // The request ID is then set in the context for logging and tracing purposes.
 func UnaryRequestIDInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(
+		ctx context.Context,
+		req interface{},
+		_ *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
+
 		var requestID string
-		
+
 		// Try to get request ID from metadata
 		if ok {
 			// gRPC metadata keys are automatically lowercased
@@ -51,11 +58,12 @@ func UnaryRequestIDInterceptor() grpc.UnaryServerInterceptor {
 // It extracts the request ID from the 'x-request-id' metadata header if present, otherwise generates a new one.
 // The request ID is then set in the context for logging and tracing purposes.
 func StreamRequestIDInterceptor() grpc.StreamServerInterceptor {
-	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return func(srv interface{}, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		ctx := ss.Context()
 		md, ok := metadata.FromIncomingContext(ctx)
+
 		var requestID string
-		
+
 		// Try to get request ID from metadata
 		if ok {
 			// gRPC metadata keys are automatically lowercased

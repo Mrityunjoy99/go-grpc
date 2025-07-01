@@ -15,6 +15,7 @@ import (
 func setupTestLogger() (*zapLogger, *observer.ObservedLogs) {
 	core, logs := observer.New(zap.InfoLevel)
 	logger := &zapLogger{logger: zap.New(core)}
+
 	return logger, logs
 }
 
