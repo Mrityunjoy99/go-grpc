@@ -6,9 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 
 	"github.com/mrityunjoydey/go-grpc/internal/common/config"
+	"github.com/mrityunjoydey/go-grpc/internal/common/constant"
 	"github.com/mrityunjoydey/go-grpc/internal/server"
 	config_pkg "github.com/mrityunjoydey/go-grpc/pkg/config"
 	"github.com/mrityunjoydey/go-grpc/pkg/logger"
@@ -27,9 +29,15 @@ func main() {
 	if err != nil {
 		panic("failed to create logger: " + err.Error())
 	}
+
+	// Create a context with a request ID for lifecycle logs
+	reqID := uuid.New().String()
+	ctx := context.WithValue(context.Background(), constant.RequestIDKey, reqID)
+	lifecycleLogger := log.WithContext(ctx)
+
 	defer func() {
-		if err := log.Flush(); err != nil {
-			log.Error("failed to flush logs", zap.Error(err))
+		if err := lifecycleLogger.Flush(); err != nil {
+			lifecycleLogger.Error("failed to flush logs", zap.Error(err))
 		}
 	}()
 
@@ -37,19 +45,19 @@ func main() {
 	srv := server.New(cfg.Server.Port, log)
 
 	// Graceful shutdown
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	go func() {
 		if err := srv.Start(); err != nil {
-			log.Fatal("gRPC server failed to start", zap.Error(err))
+			lifecycleLogger.Fatal("gRPC server failed to start", zap.Error(err))
 		}
 	}()
 
-	log.Info("gRPC server started")
+	lifecycleLogger.Info("gRPC server started")
 
 	<-ctx.Done()
 
-	log.Info("Shutting down gRPC server")
+	lifecycleLogger.Info("Shutting down gRPC server")
 	srv.Stop()
 }

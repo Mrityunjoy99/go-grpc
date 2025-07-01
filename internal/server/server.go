@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
+	"github.com/mrityunjoydey/go-grpc/internal/middleware"
 	"github.com/mrityunjoydey/go-grpc/internal/service/greeter"
 	"github.com/mrityunjoydey/go-grpc/pkg/logger"
 	pb "github.com/mrityunjoydey/go-grpc/rpc"
@@ -48,7 +49,7 @@ func interceptorLogger(l logger.Logger) logging.Logger {
 			}
 		}
 
-		logger := l.With(f...)
+		logger := l.WithContext(ctx).With(f...)
 
 		switch lvl {
 		case logging.LevelDebug:
@@ -69,8 +70,8 @@ func interceptorLogger(l logger.Logger) logging.Logger {
 func New(port string, logger logger.Logger) *Server {
 	// Setup panic recovery handler
 	recoveryOpts := []recovery.Option{
-		recovery.WithRecoveryHandler(func(p any) (err error) {
-			logger.Error("recovered from panic",
+		recovery.WithRecoveryHandlerContext(func(ctx context.Context, p any) (err error) {
+			logger.WithContext(ctx).Error("recovered from panic",
 				zap.Any("panic", p),
 				zap.String("stack", string(debug.Stack())),
 			)
@@ -81,10 +82,12 @@ func New(port string, logger logger.Logger) *Server {
 	// Create a new gRPC server with unary interceptors
 	gs := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
+			middleware.UnaryRequestIDInterceptor(),
 			logging.UnaryServerInterceptor(interceptorLogger(logger)),
 			recovery.UnaryServerInterceptor(recoveryOpts...),
 		),
 		grpc.ChainStreamInterceptor(
+			middleware.StreamRequestIDInterceptor(),
 			logging.StreamServerInterceptor(interceptorLogger(logger)),
 			recovery.StreamServerInterceptor(recoveryOpts...),
 		),
