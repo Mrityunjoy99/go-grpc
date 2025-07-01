@@ -33,6 +33,7 @@ type Server struct {
 func interceptorLogger(l logger.Logger) logging.Logger {
 	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
 		f := make([]zap.Field, 0, len(fields)/2)
+
 		for i := 0; i < len(fields); i += 2 {
 			key := fields[i]
 			value := fields[i+1]
@@ -110,21 +111,31 @@ func New(port string, logger logger.Logger) *Server {
 	}
 }
 
+// Serve starts the gRPC server on the given listener. This is useful for testing with a bufconn listener.
+func (s *Server) serve(lis net.Listener) error {
+	s.logger.Info("gRPC server starting to serve")
+
+	if err := s.grpcServer.Serve(lis); err != nil {
+		s.logger.Fatal("Failed to serve gRPC server", zap.Error(err))
+
+		return err
+	}
+
+	return nil
+}
+
 // Start starts the gRPC server.
 func (s *Server) Start() error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		s.logger.Fatal("Failed to listen", zap.Error(err))
+
 		return err
 	}
 
 	s.logger.Info(fmt.Sprintf("gRPC server listening on port %s", s.port))
-	if err := s.grpcServer.Serve(lis); err != nil {
-		s.logger.Fatal("Failed to serve gRPC server", zap.Error(err))
-		return err
-	}
 
-	return nil
+	return s.serve(lis)
 }
 
 // Stop gracefully stops the gRPC server.

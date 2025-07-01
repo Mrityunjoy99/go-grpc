@@ -47,13 +47,14 @@ func ensureLogsDir() (string, error) {
 
 	// Create logs directory if it doesn't exist
 	logsDir := filepath.Join(cwd, "logs")
-	if err := os.MkdirAll(logsDir, 0755); err != nil {
+	if err := os.MkdirAll(logsDir, 0750); err != nil {
 		return "", fmt.Errorf("failed to create logs directory: %w", err)
 	}
 
 	// Generate log file name with current date
 	now := time.Now()
 	logFileName := fmt.Sprintf("log-%s.log", now.Format("2006-01-02"))
+
 	return filepath.Join(logsDir, logFileName), nil
 }
 
@@ -108,6 +109,7 @@ func NewZapLogger(serviceName string, logInFile bool) (Logger, error) {
 
 		var zl *zap.Logger
 		zl, initErr = config.Build(zap.AddCallerSkip(1))
+
 		if initErr != nil {
 			initErr = fmt.Errorf("failed to build logger: %w", initErr)
 			return

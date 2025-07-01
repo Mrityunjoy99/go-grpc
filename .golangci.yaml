@@ -1,0 +1,15 @@
+version: 2
+linters:
+  enable:
+    - lll
+    - funlen
+    - gocritic
+    - gocyclo
+    - gosec
+    - revive
+    - nakedret
+    - nolintlint
+    - unconvert
+    - wsl
+    - unparam
+

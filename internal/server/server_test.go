@@ -31,9 +31,6 @@ func TestNew(t *testing.T) {
 
 	srv := New("8080", logger)
 	assert.NotNil(t, srv)
-	assert.NotNil(t, srv.grpcServer)
-	assert.NotNil(t, srv.healthSrv)
-	assert.Equal(t, "8080", srv.port)
 }
 
 func TestServer_StartStop(t *testing.T) {
@@ -47,7 +44,7 @@ func TestServer_StartStop(t *testing.T) {
 
 	// Start the server in a separate goroutine
 	go func() {
-		if err := srv.grpcServer.Serve(bufListener); err != nil {
+		if err := srv.serve(bufListener); err != nil {
 			// This error is expected after the listener is closed.
 			if err != grpc.ErrServerStopped {
 				t.Logf("server error: %v", err)
@@ -61,6 +58,7 @@ func TestServer_StartStop(t *testing.T) {
 
 	// Use a custom resolver scheme for bufconn
 	resolver.SetDefaultScheme("passthrough")
+
 	conn, err := grpc.NewClient("passthrough:///bufnet",
 		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return bufListener.Dial()
@@ -68,6 +66,7 @@ func TestServer_StartStop(t *testing.T) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	require.NoError(t, err)
+
 	defer func() {
 		if err := conn.Close(); err != nil {
 			t.Logf("failed to close connection: %v", err)

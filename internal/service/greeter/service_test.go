@@ -40,8 +40,10 @@ func (m *mockGreeterServerStream) Recv() (*pb.HelloRequest, error) {
 	if m.recvIndex >= len(m.requests) {
 		return nil, io.EOF
 	}
+
 	req := m.requests[m.recvIndex]
 	m.recvIndex++
+
 	return req, nil
 }
 
@@ -73,6 +75,7 @@ func TestGreeterService_StreamGreetings(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, stream.sentReplies, 5)
+
 	for i, msg := range stream.sentReplies {
 		expected := fmt.Sprintf("Hello, Streamer! (Greeting #%d)", i+1)
 		assert.Equal(t, expected, msg.Message)
@@ -112,6 +115,7 @@ func TestGreeterService_Chat(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, stream.sentReplies, len(requests))
+
 	for i, reply := range stream.sentReplies {
 		expected := "Hello, " + requests[i].GetName()
 		assert.Equal(t, expected, reply.Message)

@@ -14,15 +14,18 @@ import (
 	pb "github.com/mrityunjoydey/go-grpc/rpc"
 )
 
+//nolint:funlen
 func main() {
 	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Printf("did not connect: %v", err)
+		return
 	}
 
 	defer func() {
 		if err := conn.Close(); err != nil {
-			log.Fatalf("failed to close connection: %v", err)
+			log.Printf("failed to close connection: %v", err)
+			return
 		}
 	}()
 
@@ -30,17 +33,21 @@ func main() {
 
 	// --- Test Case 1: No request ID in header ---
 	log.Println("--- Sending request without X-Request-ID header ---")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: "world"})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Printf("could not greet: %v", err)
+		return
 	}
+
 	log.Printf("Greeting: %s", r.GetMessage())
 
 	// --- Test Case 2: With request ID in header ---
 	log.Println("\n--- Sending request with X-Request-ID header ---")
+
 	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Second)
 	defer cancel2()
 
@@ -49,18 +56,22 @@ func main() {
 
 	r2, err := c.SayHello(ctx2, &pb.HelloRequest{Name: "world"})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Printf("could not greet: %v", err)
+		return
 	}
+
 	log.Printf("Greeting: %s", r2.GetMessage())
 
 	// --- Test Case 3: StreamGreetings ---
 	log.Println("\n--- Calling StreamGreetings ---")
+
 	ctx3, cancel3 := context.WithTimeout(context.Background(), time.Second)
 	defer cancel3()
 
 	stream, err := c.StreamGreetings(ctx3, &pb.HelloRequest{Name: "streaming world"})
 	if err != nil {
-		log.Fatalf("could not start stream: %v", err)
+		log.Printf("could not start stream: %v", err)
+		return
 	}
 
 	for {
@@ -68,9 +79,12 @@ func main() {
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
-			log.Fatalf("%v.StreamGreetings(_) = _, %v", c, err)
+			log.Printf("%v.StreamGreetings(_) = _, %v", c, err)
+			return
 		}
+
 		log.Printf("Streamed Greeting: %s", feature.GetMessage())
 	}
 }

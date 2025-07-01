@@ -17,8 +17,9 @@ import (
 func UnaryRequestIDInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
+
 		var requestID string
-		
+
 		// Try to get request ID from metadata
 		if ok {
 			// gRPC metadata keys are automatically lowercased
@@ -54,8 +55,9 @@ func StreamRequestIDInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		ctx := ss.Context()
 		md, ok := metadata.FromIncomingContext(ctx)
+
 		var requestID string
-		
+
 		// Try to get request ID from metadata
 		if ok {
 			// gRPC metadata keys are automatically lowercased
