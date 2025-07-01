@@ -1,3 +1,4 @@
+// Package logger provides a Logger interface with zaplogger implementation.
 package logger
 
 import (
@@ -13,6 +14,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Logger interface for logging messages.
 type Logger interface {
 	Debug(msg string, fields ...zap.Field)
 	Info(msg string, fields ...zap.Field)
@@ -34,9 +36,6 @@ var (
 	initErr error
 )
 
-// NewZapLogger creates a new zap logger instance.
-// serviceName will be added as a field to all log messages.
-// It's safe to call this function multiple times - it will only initialize the logger once.
 // ensureLogsDir ensures the logs directory exists and returns the path to the daily log file
 func ensureLogsDir() (string, error) {
 	// Get the current working directory
@@ -58,6 +57,9 @@ func ensureLogsDir() (string, error) {
 	return filepath.Join(logsDir, logFileName), nil
 }
 
+// NewZapLogger creates a new zap logger instance.
+// serviceName will be added as a field to all log messages.
+// It's safe to call this function multiple times - it will only initialize the logger once.
 func NewZapLogger(serviceName string, logInFile bool) (Logger, error) {
 	once.Do(func() {
 		config := zap.NewProductionConfig()

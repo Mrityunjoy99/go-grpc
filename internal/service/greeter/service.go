@@ -1,3 +1,4 @@
+// Package greeter implements the GreeterServer interface.
 package greeter
 
 import (
@@ -10,25 +11,25 @@ import (
 	"go.uber.org/zap"
 )
 
-// GreeterService implements the GreeterServer interface.
-type GreeterService struct {
+// Service implements the GreeterServer interface.
+type Service struct {
 	pb.UnimplementedGreeterServer
 	logger logger.Logger
 }
 
-// NewGreeterService creates a new GreeterService.
-func NewGreeterService(logger logger.Logger) *GreeterService {
-	return &GreeterService{logger: logger}
+// NewService creates a new Service.
+func NewService(logger logger.Logger) *Service {
+	return &Service{logger: logger}
 }
 
 // SayHello implements the SayHello RPC method.
-func (s *GreeterService) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
+func (s *Service) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
 	s.logger.WithContext(ctx).Info("SayHello request received", zap.String("name", req.GetName()))
 	return &pb.HelloReply{Message: "Hello, " + req.GetName()}, nil
 }
 
 // StreamGreetings implements the StreamGreetings RPC method for server-side streaming.
-func (s *GreeterService) StreamGreetings(req *pb.HelloRequest, stream pb.Greeter_StreamGreetingsServer) error {
+func (s *Service) StreamGreetings(req *pb.HelloRequest, stream pb.Greeter_StreamGreetingsServer) error {
 	s.logger.WithContext(stream.Context()).Info("StreamGreetings request received", zap.String("name", req.GetName()))
 
 	for i := 0; i < 5; i++ {
@@ -47,7 +48,7 @@ func (s *GreeterService) StreamGreetings(req *pb.HelloRequest, stream pb.Greeter
 }
 
 // GreetManyTimes implements the GreetManyTimes RPC method for client-side streaming.
-func (s *GreeterService) GreetManyTimes(stream pb.Greeter_GreetManyTimesServer) error {
+func (s *Service) GreetManyTimes(stream pb.Greeter_GreetManyTimesServer) error {
 	s.logger.WithContext(stream.Context()).Info("GreetManyTimes request received")
 
 	var names []string
@@ -70,7 +71,7 @@ func (s *GreeterService) GreetManyTimes(stream pb.Greeter_GreetManyTimesServer) 
 }
 
 // Chat implements the Chat RPC method for bi-directional streaming.
-func (s *GreeterService) Chat(stream pb.Greeter_ChatServer) error {
+func (s *Service) Chat(stream pb.Greeter_ChatServer) error {
 	s.logger.WithContext(stream.Context()).Info("Chat session started")
 
 	for {

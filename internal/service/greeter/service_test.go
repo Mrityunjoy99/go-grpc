@@ -54,7 +54,7 @@ func (m *mockGreeterServerStream) SendAndClose(res *pb.HelloReply) error {
 
 func TestGreeterService_SayHello(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	req := &pb.HelloRequest{Name: "World"}
 	res, err := s.SayHello(context.Background(), req)
@@ -66,7 +66,7 @@ func TestGreeterService_SayHello(t *testing.T) {
 
 func TestGreeterService_StreamGreetings(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	req := &pb.HelloRequest{Name: "Streamer"}
 	stream := &mockGreeterServerStream{ctx: context.Background()}
@@ -84,7 +84,7 @@ func TestGreeterService_StreamGreetings(t *testing.T) {
 
 func TestGreeterService_GreetManyTimes(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	requests := []*pb.HelloRequest{
 		{Name: "Alice"},
@@ -102,7 +102,7 @@ func TestGreeterService_GreetManyTimes(t *testing.T) {
 
 func TestGreeterService_Chat(t *testing.T) {
 	logger, _ := logger.NewZapLogger("test", false)
-	s := greeter.NewGreeterService(logger)
+	s := greeter.NewService(logger)
 
 	requests := []*pb.HelloRequest{
 		{Name: "Dave"},

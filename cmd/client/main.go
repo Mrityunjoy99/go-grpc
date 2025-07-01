@@ -1,3 +1,6 @@
+// Package main is the entry point for the gRPC client application.
+// It handles the initialization and execution of the gRPC client.
+// This is only for testing purpose
 package main
 
 import (

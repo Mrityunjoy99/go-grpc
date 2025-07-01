@@ -12,4 +12,13 @@ linters:
     - unconvert
     - wsl
     - unparam
-
+  exclusions:
+    rules:
+      - path: _test.go
+        linters:
+          - funlen
+          - gocyclo
+          - gocritic
+          - revive
+          - nakedret
+          - nolintlint

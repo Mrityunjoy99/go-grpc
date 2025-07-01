@@ -1,3 +1,4 @@
+// Package config provides a configuration loading and validation functionality.
 package config
 
 import (
@@ -11,6 +12,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// LoadConfig loads the configuration from a os environment variables.
 func LoadConfig[T any](c T) (T, error) {
 	err := SetDefault(c)
 	if err != nil {
@@ -53,6 +55,7 @@ func bindKeys() {
 	}
 }
 
+// SetDefault sets default values for the struct fields.
 func SetDefault[T any](c T) error {
 	if err := defaults.Set(c); err != nil {
 		return err

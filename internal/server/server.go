@@ -1,3 +1,4 @@
+// Package server provides a gRPC server implementation.
 package server
 
 import (
@@ -95,7 +96,7 @@ func New(port string, logger logger.Logger) *Server {
 	)
 
 	// Register Greeter service
-	greeterService := greeter.NewGreeterService(logger)
+	greeterService := greeter.NewService(logger)
 	pb.RegisterGreeterServer(gs, greeterService)
 
 	// Register health check service
