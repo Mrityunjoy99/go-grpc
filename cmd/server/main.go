@@ -10,11 +10,10 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 
-	"github.com/mrityunjoydey/go-grpc/internal/common/config"
-	"github.com/mrityunjoydey/go-grpc/internal/common/constant"
-	"github.com/mrityunjoydey/go-grpc/internal/server"
 	config_pkg "github.com/mrityunjoydey/go-grpc/pkg/config"
 	"github.com/mrityunjoydey/go-grpc/pkg/logger"
+	"github.com/mrityunjoydey/go-grpc/src/common/config"
+	"github.com/mrityunjoydey/go-grpc/src/server"
 )
 
 func main() {
@@ -33,7 +32,7 @@ func main() {
 
 	// Create a context with a request ID for lifecycle logs
 	reqID := uuid.New().String()
-	ctx := context.WithValue(context.Background(), constant.RequestIDKey, reqID)
+	ctx := context.WithValue(context.Background(), logger.FieldNameRequestId, reqID)
 	lifecycleLogger := log.WithContext(ctx)
 
 	defer func() {

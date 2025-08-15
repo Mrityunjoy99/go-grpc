@@ -15,9 +15,10 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/reflection"
 
-	"github.com/mrityunjoydey/go-grpc/internal/middleware"
-	"github.com/mrityunjoydey/go-grpc/internal/service/greeter"
+	"github.com/mrityunjoydey/go-grpc/src/middleware"
+	"github.com/mrityunjoydey/go-grpc/src/service/greeter"
 	"github.com/mrityunjoydey/go-grpc/pkg/logger"
 	pb "github.com/mrityunjoydey/go-grpc/rpc"
 )
@@ -103,6 +104,9 @@ func New(port string, logger logger.Logger) *Server {
 	healthSrv := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(gs, healthSrv)
 	healthSrv.SetServingStatus(pb.Greeter_ServiceDesc.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	// Register reflection service on gRPC server.
+	reflection.Register(gs)
 
 	return &Server{
 		logger:     logger,

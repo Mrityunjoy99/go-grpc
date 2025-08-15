@@ -9,7 +9,8 @@ import (
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/mrityunjoydey/go-grpc/internal/common/constant"
+	"github.com/mrityunjoydey/go-grpc/pkg/logger"
+	"github.com/mrityunjoydey/go-grpc/src/common/constant"
 )
 
 // UnaryRequestIDInterceptor returns a new unary server interceptor that adds a request ID to the context.
@@ -48,7 +49,7 @@ func UnaryRequestIDInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		// Add request ID to context
-		ctx = context.WithValue(ctx, constant.RequestIDKey, requestID)
+		ctx = context.WithValue(ctx, logger.FieldNameRequestId, requestID)
 
 		return handler(ctx, req)
 	}
@@ -86,7 +87,7 @@ func StreamRequestIDInterceptor() grpc.StreamServerInterceptor {
 		}
 
 		// Create new context with request ID
-		newCtx := context.WithValue(ctx, constant.RequestIDKey, requestID)
+		newCtx := context.WithValue(ctx, logger.FieldNameRequestId, requestID)
 
 		// Wrap the server stream with our context
 		wrapped := &wrappedStream{ServerStream: ss, newCtx: newCtx}

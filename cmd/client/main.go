@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/mrityunjoydey/go-grpc/internal/common/constant"
+	"github.com/mrityunjoydey/go-grpc/src/common/constant"
 	pb "github.com/mrityunjoydey/go-grpc/rpc"
 )
 

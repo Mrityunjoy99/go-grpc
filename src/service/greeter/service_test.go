@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/mrityunjoydey/go-grpc/internal/service/greeter"
+	"github.com/mrityunjoydey/go-grpc/src/service/greeter"
 	"github.com/mrityunjoydey/go-grpc/pkg/logger"
 	pb "github.com/mrityunjoydey/go-grpc/rpc"
 	"github.com/stretchr/testify/assert"
